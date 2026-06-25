@@ -808,22 +808,43 @@ export default function App() {
   };
 
   const submitSignature = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!clientName || !signatureText) return;
-    try {
-      // Preserve exact signature fetch structure requested
-      await fetch('/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientName, contactEmail, signatureText, currentPriceText })
-      });
-    } catch (err) {
-      console.warn('Backend endpoint /submit not available in local environment, proceeding client-side.', err);
-    }
-    setIsSignModalOpen(false);
-    setIsAccepted(true);
+  e.preventDefault();
+
+  // Basic validation check
+  if (!clientName || !contactEmail || !signatureText) {
+    alert("❌ Please fill out all signature form fields before proceeding.");
+    return;
+  }
+
+  // Gather payload fields matching what your backend submit.js reads
+  const payload = {
+    clientName,
+    contactEmail,
+    signatureText,
+    currentPrice: currentPriceText || "Selected Package Tier",
+    gymName: "Nelson Shoes Proposal"
   };
 
+  try {
+    const response = await fetch("/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      // Transition UI smoothly only after a 200 OK delivery confirmation
+      setIsSignModalOpen(false);
+      setIsAccepted(true);
+    } else {
+      const errorText = await response.text();
+      alert(`❌ SERVER ERROR (${response.status}): ${errorText}`);
+    }
+
+  } catch (err: any) {
+    alert(`❌ NETWORK ERROR: Unable to contact backend edge endpoint. ${err.message}`);
+  }
+};
   const totalSelectedAddonsCount = Object.keys(selectedAddons).filter(k => selectedAddons[k]).length;
 
   return (
