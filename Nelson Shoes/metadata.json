@@ -1,0 +1,8 @@
+{
+  "name": "Stanley Website Proposal",
+  "description": "Bespoke Digital Atelier Architecture & Private Flagship Proposal for Nelson Shoes featuring interactive pricing, sitemaps, and timelines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
